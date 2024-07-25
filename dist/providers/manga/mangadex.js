@@ -22,8 +22,8 @@ class MangaDex extends models_1.MangaParser {
                     description: data.data.attributes.description,
                     genres: data.data.attributes.tags.map((tag) => {
                         return {
-                            name: tag.id,
-                            id: tag.attributes.name.en
+                            id: tag.id,
+                            name: tag.attributes.name.en
                         };
                     }),
                     themes: data.data.attributes.tags
@@ -308,8 +308,8 @@ class MangaDex extends models_1.MangaParser {
                             lastChapter: manga.attributes.lastChapter,
                             genres: manga.attributes.tags.map((tag) => {
                                 return {
-                                    name: tag.id,
-                                    id: tag.attributes.name.en
+                                    id: tag.id,
+                                    name: tag.attributes.name.en
                                 };
                             }),
                             image: `${this.baseUrl}/covers/${manga.id}/${coverArt}`
