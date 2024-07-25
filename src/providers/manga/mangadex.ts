@@ -320,22 +320,18 @@ class MangaDex extends MangaParser {
     }
   };
 
+
   fetchByTag = async (
     page: number = 1,
     limit: number = 20,
-    tag: string
+    tagid: string = ''
   ): Promise<ISearch<IMangaResult>> => {
     if (page <= 0) throw new Error('Page number must be greater than 0');
-    if (tag === '') throw new Error('Tag is required');
     if (limit > 100) throw new Error('Limit must be less than or equal to 100');
     if (limit * (page - 1) >= 10000) throw new Error('not enough results');
 
     try {
-      const res = await this.client.get(
-        `${this.apiUrl}/manga?includes[]=cover_art&includes[]=artist&includes[]=author&order[followedCount]=desc&contentRating[]=safe&contentRating[]=suggestive&hasAvailableChapters=true&page=5&include=${tag}&onlyAvailableChapters=true&limit=${limit}&offset=${
-          limit * (page - 1)
-        }`
-      );
+      const res = await this.client.get(`${this.apiUrl}/manga?includes[]=cover_art&includes[]=artist&includes[]=author&order[followedCount]=desc&contentRating[]=safe&contentRating[]=suggestive&includedTags[]=${tagid}&includedTagsMode=AND&excludedTagsMode=OR&limit=&limit=${limit}&offset=${limit * (page - 1)}`);
 
       if (res.data.result == 'ok') {
         const results: ISearch<IMangaResult> = {
@@ -358,6 +354,12 @@ class MangaDex extends MangaParser {
             contentRating: manga.attributes.contentRating,
             lastVolume: manga.attributes.lastVolume,
             lastChapter: manga.attributes.lastChapter,
+            genres: manga.attributes.tags.map((tag: any) => {
+              return {
+                  name: tag.id,
+                  id: tag.attributes.name.en
+              }
+            }),
             image: `${this.baseUrl}/covers/${manga.id}/${coverArt}`
           });
         }

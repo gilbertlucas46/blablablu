@@ -20,7 +20,7 @@ declare class MangaDex extends MangaParser {
     fetchRecentlyAdded: (page?: number, limit?: number) => Promise<ISearch<IMangaResult>>;
     fetchLatestUpdates: (page?: number, limit?: number) => Promise<ISearch<IMangaResult>>;
     fetchPopular: (page?: number, limit?: number) => Promise<ISearch<IMangaResult>>;
-    fetchByTag: (page: number | undefined, limit: number | undefined, tag: string) => Promise<ISearch<IMangaResult>>;
+    fetchByTag: (page?: number, limit?: number, tagid?: string) => Promise<ISearch<IMangaResult>>;
     private fetchAllChapters;
     private fetchCoverImage;
 }
