@@ -20,9 +20,12 @@ class MangaDex extends MangaParser {
         title: data.data.attributes.title.en,
         altTitles: data.data.attributes.altTitles,
         description: data.data.attributes.description,
-        genres: data.data.attributes.tags
-          .filter((tag: any) => tag.attributes.group === 'genre')
-          .map((tag: any) => tag.attributes.name.en),
+        genres: data.data.attributes.totalPages.map((tag: any) => {
+            return {
+                name: tag.id,
+                id: tag.attributes.name.en
+            }
+        }),
         themes: data.data.attributes.tags
           .filter((tag: any) => tag.attributes.group === 'theme')
           .map((tag: any) => tag.attributes.name.en),
