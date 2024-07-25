@@ -316,6 +316,58 @@ class MangaDex extends MangaParser {
       throw new Error((err as Error).message);
     }
   };
+
+  fetchByTag = async (
+    page: number = 1,
+    limit: number = 20,
+    tag: string
+  ): Promise<ISearch<IMangaResult>> => {
+    if (page <= 0) throw new Error('Page number must be greater than 0');
+    if (tag === '') throw new Error('Tag is required');
+    if (limit > 100) throw new Error('Limit must be less than or equal to 100');
+    if (limit * (page - 1) >= 10000) throw new Error('not enough results');
+
+    try {
+      const res = await this.client.get(
+        `${this.apiUrl}/manga?includes[]=cover_art&includes[]=artist&includes[]=author&order[followedCount]=desc&contentRating[]=safe&contentRating[]=suggestive&hasAvailableChapters=true&page=5&include=${tag}&onlyAvailableChapters=true&limit=${limit}&offset=${
+          limit * (page - 1)
+        }`
+      );
+
+      if (res.data.result == 'ok') {
+        const results: ISearch<IMangaResult> = {
+          currentPage: page,
+          results: [],
+        };
+
+        for (const manga of res.data.data) {
+          const findCoverArt = manga.relationships.find((item: any) => item.type === 'cover_art');
+          const coverArtId = findCoverArt ? findCoverArt.id : null;
+          const coverArt = await this.fetchCoverImage(coverArtId === null || coverArtId === void 0 ? void 0 : coverArtId);
+
+          results.results.push({
+            id: manga.id,
+            title: Object.values(manga.attributes.title)[0] as string,
+            altTitles: manga.attributes.altTitles,
+            description: Object.values(manga.attributes.description)[0] as string,
+            status: manga.attributes.status,
+            releaseDate: manga.attributes.year,
+            contentRating: manga.attributes.contentRating,
+            lastVolume: manga.attributes.lastVolume,
+            lastChapter: manga.attributes.lastChapter,
+            image: `${this.baseUrl}/covers/${manga.id}/${coverArt}`
+          });
+        }
+
+        return results;
+      } else {
+        throw new Error(res.data.message);
+      }
+    } catch (err) {
+      throw new Error((err as Error).message);
+    }
+  };
+
   private fetchAllChapters = async (
     mangaId: string,
     offset: number,
