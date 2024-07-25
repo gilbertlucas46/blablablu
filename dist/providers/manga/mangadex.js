@@ -20,7 +20,7 @@ class MangaDex extends models_1.MangaParser {
                     title: data.data.attributes.title.en,
                     altTitles: data.data.attributes.altTitles,
                     description: data.data.attributes.description,
-                    genres: data.data.attributes.totalPages.map((tag) => {
+                    genres: data.data.attributes.tags.map((tag) => {
                         return {
                             name: tag.id,
                             id: tag.attributes.name.en
